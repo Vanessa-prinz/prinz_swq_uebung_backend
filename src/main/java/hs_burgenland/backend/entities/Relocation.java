@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor
@@ -17,8 +17,8 @@ public class Relocation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int relocationId;
     private String name;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime moveDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate moveDate;
     private String fromAddress;
     private int fromFloor;
     private boolean fromElevator;
@@ -44,11 +44,11 @@ public class Relocation {
         this.name = name;
     }
 
-    public LocalDateTime getMoveDate() {
+    public LocalDate getMoveDate() {
         return moveDate;
     }
 
-    public void setMoveDate(LocalDateTime moveDate) {
+    public void setMoveDate(LocalDate moveDate) {
         this.moveDate = moveDate;
     }
 

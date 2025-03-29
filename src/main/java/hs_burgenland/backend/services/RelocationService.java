@@ -4,7 +4,8 @@ import hs_burgenland.backend.entities.Relocation;
 import hs_burgenland.backend.repositories.RelocationRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class RelocationService {
@@ -15,7 +16,7 @@ public class RelocationService {
         this.relocationRepository = relocationRepository;
     }
 
-    public Relocation requestForRelocationSupport(String name, LocalDateTime moveDate, String fromAddress, int fromFloor,
+    public Relocation requestForRelocationSupport(String name, LocalDate moveDate, String fromAddress, int fromFloor,
                                                   boolean fromElevator, String toAddress, int toFloor, boolean toElevator,
                                                   int numberOfRooms, boolean withPackingService) {
         Relocation relocation = new Relocation();
@@ -31,5 +32,9 @@ public class RelocationService {
         relocation.setWithPackingService(withPackingService);
 
         return relocationRepository.save(relocation);
+    }
+
+    public List<Relocation> getAllRelocations() {
+        return relocationRepository.findAll();
     }
 }
