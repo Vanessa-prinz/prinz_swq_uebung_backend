@@ -1,6 +1,7 @@
 package hs_burgenland.backend.controller;
 
 import hs_burgenland.backend.entities.Relocation;
+import hs_burgenland.backend.services.RelocationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -22,13 +23,16 @@ public class RelocationControllerTests {
     @InjectMocks
     private RelocationController relocationController;
     private Relocation testRelocation;
+    private LocalDate testMoveDate;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
+        testMoveDate = LocalDate.of(2025, 6, 1);
+
         testRelocation = new Relocation();
         testRelocation.setRelocationId(12);
         testRelocation.setName("Max Mustermann");
-        testRelocation.setMoveDate(new SimpleDateFormat("yyyy-MM-ddd").parse("2025-06-01"));
+        testRelocation.setMoveDate(testMoveDate);
         testRelocation.setFromAddress("Musterstraße 1 12345 Musterstadt");
         testRelocation.setFromFloor(3);
         testRelocation.setFromElevator(true);
@@ -41,12 +45,16 @@ public class RelocationControllerTests {
 
     @Test
     public void testRequestForRelocationSupport_Success() {
-        when(relocationService.requestForRelocationSupport("Max Mustermann", "2025-06-01", "Musterstraße 1 12345 Musterstadt", 3, true, "Hauptstraße 5 54321 Großstadt", 2, false, 3, true)).thenReturn(testRelocation);
+        when(relocationService.requestForRelocationSupport("Max Mustermann", testMoveDate, "Musterstraße 1 12345 Musterstadt",
+                3, true, "Hauptstraße 5 54321 Großstadt", 2, false,
+                3, true)).thenReturn(testRelocation);
 
         ResponseEntity<?> response = relocationController.requestForRelocationSupport(testRelocation);
 
-        assertEquals(201, response.getStatusCodeValue());
+        assertEquals(201, response.getStatusCode().value());
         assertEquals(testRelocation, response.getBody());
-        verify(relocationService, times(1)).requestForRelocationSupport("Max Mustermann", "2025-06-01", "Musterstraße 1 12345 Musterstadt", 3, true, "Hauptstraße 5 54321 Großstadt", 2, false, 3, true);
+        verify(relocationService, times(1)).requestForRelocationSupport("Max Mustermann", testMoveDate,
+                "Musterstraße 1 12345 Musterstadt", 3, true, "Hauptstraße 5 54321 Großstadt",
+                2, false, 3, true);
     }
 }

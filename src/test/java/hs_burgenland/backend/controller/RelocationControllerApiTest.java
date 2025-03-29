@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -39,24 +39,13 @@ public class RelocationControllerApiTest {
     @Transactional
     @Test
     public void testRequestForRelocationSupportApi() throws Exception {
-        Relocation newRelocation = new Relocation();
-        newRelocation.setRelocationId(12);
-        newRelocation.setName("Max Mustermann");
-        newRelocation.setMoveDate(new SimpleDateFormat("yyyy-MM-ddd").parse("2025-06-01"));
-        newRelocation.setFromAddress("Musterstraße 1 12345 Musterstadt");
-        newRelocation.setFromFloor(3);
-        newRelocation.setFromElevator(true);
-        newRelocation.setToAddress("Hauptstraße 5 54321 Großstadt");
-        newRelocation.setToFloor(2);
-        newRelocation.setToElevator(false);
-        newRelocation.setNumberOfRooms(3);
-        newRelocation.setWithPackingService(true);
+        Relocation newRelocation = getNewRelocation();
 
         mockMvc.perform(post("/relocation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newRelocation)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.relocationId").value(12))
+                .andExpect(jsonPath("$.relocationId").exists())
                 .andExpect(jsonPath("$.name").value("Max Mustermann"))
                 .andExpect(jsonPath("$.moveDate").value("2025-06-01"))
                 .andExpect(jsonPath("$.fromAddress").value("Musterstraße 1 12345 Musterstadt"))
@@ -67,5 +56,21 @@ public class RelocationControllerApiTest {
                 .andExpect(jsonPath("$.toElevator").value(false))
                 .andExpect(jsonPath("$.numberOfRooms").value(3))
                 .andExpect(jsonPath("$.withPackingService").value(true));
+    }
+
+    private static Relocation getNewRelocation() {
+        Relocation newRelocation = new Relocation();
+        newRelocation.setName("Max Mustermann");
+        LocalDate testMoveDate = LocalDate.of(2025, 6, 1);
+        newRelocation.setMoveDate(testMoveDate);
+        newRelocation.setFromAddress("Musterstraße 1 12345 Musterstadt");
+        newRelocation.setFromFloor(3);
+        newRelocation.setFromElevator(true);
+        newRelocation.setToAddress("Hauptstraße 5 54321 Großstadt");
+        newRelocation.setToFloor(2);
+        newRelocation.setToElevator(false);
+        newRelocation.setNumberOfRooms(3);
+        newRelocation.setWithPackingService(true);
+        return newRelocation;
     }
 }

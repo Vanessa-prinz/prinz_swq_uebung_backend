@@ -9,7 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -22,13 +22,16 @@ public class RelocationServiceTests {
     @InjectMocks
     private RelocationService relocationService;
     private Relocation testRelocation;
+    private LocalDate testMoveDate;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
+        testMoveDate = LocalDate.of(2025, 6, 1);
+
         testRelocation = new Relocation();
         testRelocation.setRelocationId(12);
         testRelocation.setName("Max Mustermann");
-        testRelocation.setMoveDate(new SimpleDateFormat("yyyy-MM-ddd").parse("2025-06-01"));
+        testRelocation.setMoveDate(testMoveDate);
         testRelocation.setFromAddress("Musterstraße 1 12345 Musterstadt");
         testRelocation.setFromFloor(3);
         testRelocation.setFromElevator(true);
@@ -43,20 +46,22 @@ public class RelocationServiceTests {
     public void testRequestForRelocationSupport_Success() {
         when(relocationRepository.save(any(Relocation.class))).thenReturn(testRelocation);
 
-        Relocation createdRelocation = relocationService.requestForRelocationSupport(testRelocation.getName(), testRelocation.getMoveDate(), testRelocation.getFromAddress(), testRelocation.getFromFloor(), testRelocation.getFromElevator(), testRelocation.getToAddress(), testRelocation.getToFloor(), testRelocation.getToElevator(), testRelocation.getNumberOfRooms(), testRelocation.getWithPackingService());
+        Relocation createdRelocation = relocationService.requestForRelocationSupport(testRelocation.getName(), testRelocation.getMoveDate(),
+                testRelocation.getFromAddress(), testRelocation.getFromFloor(), testRelocation.isFromElevator(), testRelocation.getToAddress(),
+                testRelocation.getToFloor(), testRelocation.isToElevator(), testRelocation.getNumberOfRooms(), testRelocation.isWithPackingService());
 
         assertNotNull(createdRelocation);
         assertEquals(12, createdRelocation.getRelocationId());
         assertEquals("Max Mustermann", createdRelocation.getName());
-        assertEquals("2025-06-01", createdRelocation.getMoveDate());
+        assertEquals(testMoveDate, createdRelocation.getMoveDate());
         assertEquals("Musterstraße 1 12345 Musterstadt", createdRelocation.getFromAddress());
         assertEquals(3, createdRelocation.getFromFloor());
-        assertTrue(createdRelocation.getFromElevator());
+        assertTrue(createdRelocation.isFromElevator());
         assertEquals("Hauptstraße 5 54321 Großstadt", createdRelocation.getToAddress());
         assertEquals(2, createdRelocation.getToFloor());
-        assertFalse(createdRelocation.getToElevator());
+        assertFalse(createdRelocation.isToElevator());
         assertEquals(3, createdRelocation.getNumberOfRooms());
-        assertTrue(createdRelocation.getWithPackingService());
+        assertTrue(createdRelocation.isWithPackingService());
         verify(relocationRepository, times(1)).save(any(Relocation.class));
     }
 }

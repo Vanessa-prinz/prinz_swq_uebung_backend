@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,10 +28,12 @@ public class RelocationServiceComponentTest {
     private Relocation testRelocation;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
+        LocalDate testMoveDate = LocalDate.of(2025, 6, 1);
+
         testRelocation = new Relocation();
         testRelocation.setName("Max Mustermann");
-        testRelocation.setMoveDate(new SimpleDateFormat("yyyy-MM-ddd").parse("2025-06-01"));
+        testRelocation.setMoveDate(testMoveDate);
         testRelocation.setFromAddress("Musterstraße 1 12345 Musterstadt");
         testRelocation.setFromFloor(3);
         testRelocation.setFromElevator(true);
@@ -50,16 +52,15 @@ public class RelocationServiceComponentTest {
                 testRelocation.getMoveDate(),
                 testRelocation.getFromAddress(),
                 testRelocation.getFromFloor(),
-                testRelocation.getFromElevator(),
+                testRelocation.isFromElevator(),
                 testRelocation.getToAddress(),
                 testRelocation.getToFloor(),
-                testRelocation.getToElevator(),
+                testRelocation.isToElevator(),
                 testRelocation.getNumberOfRooms(),
-                testRelocation.getWithPackingService()
+                testRelocation.isWithPackingService()
         );
 
         assertNotNull(newRelocation);
-        assertNotNull(newRelocation.getRelocationId());
 
         Optional<Relocation> foundRelocation = relocationRepository.findById(newRelocation.getRelocationId());
         assertTrue(foundRelocation.isPresent());
@@ -71,7 +72,9 @@ public class RelocationServiceComponentTest {
         assertEquals(testRelocation.getToAddress(), relocationFromDb.getToAddress());
         assertEquals(testRelocation.getFromFloor(), relocationFromDb.getFromFloor());
         assertEquals(testRelocation.getToFloor(), relocationFromDb.getToFloor());
+        assertEquals(testRelocation.isFromElevator(), relocationFromDb.isFromElevator());
+        assertEquals(testRelocation.isToElevator(), relocationFromDb.isToElevator());
         assertEquals(testRelocation.getNumberOfRooms(), relocationFromDb.getNumberOfRooms());
-        assertEquals(testRelocation.getWithPackingService(), relocationFromDb.getWithPackingService());
+        assertEquals(testRelocation.isWithPackingService(), relocationFromDb.isWithPackingService());
     }
 }
